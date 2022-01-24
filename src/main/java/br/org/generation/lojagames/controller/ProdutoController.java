@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.org.generation.lojagames.model.Produto;
+import br.org.generation.lojagames.repository.CategoriaRepository;
 import br.org.generation.lojagames.repository.ProdutoRepository;
 
 @RestController
@@ -27,6 +28,9 @@ public class ProdutoController {
 	
 	@Autowired
 	private ProdutoRepository  produtoRepository;
+	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
 	
 	@GetMapping
 	public ResponseEntity <List<Produto>> lista() {
@@ -50,17 +54,26 @@ public class ProdutoController {
 	
 	@PostMapping
 	public ResponseEntity <Produto> posta(@Valid @RequestBody Produto produto) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produto));
+		return categoriaRepository.findById(produto.getCategoria().getId())
+				.map(resposta -> ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produto)))
+				.orElse(ResponseEntity.badRequest().build());
+				
 	}
+	
+	
+	
+	
 	
 	@PutMapping
 	public ResponseEntity <Produto> atualiza(@Valid @RequestBody Produto atualiza){
-		return produtoRepository.findById(atualiza.getId())
-				.map(resposta -> {
-					return ResponseEntity.ok().body(produtoRepository.save(atualiza));	
-				})
-				.orElse(ResponseEntity.notFound().build());
-	}
+		if(produtoRepository.existsById(atualiza.getId())){
+	      return categoriaRepository.findById(atualiza.getCategoria().getId())
+				.map(resposta -> ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(atualiza)))
+				.orElse(ResponseEntity.badRequest().build());
+		}
+		return ResponseEntity.notFound().build();
+	}		
+				
 	@DeleteMapping("/{id}")
 	public ResponseEntity <?> DeletaProduto(@PathVariable Long id){
 		return produtoRepository.findById(id)
