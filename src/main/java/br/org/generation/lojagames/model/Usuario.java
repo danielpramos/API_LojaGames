@@ -1,6 +1,7 @@
 package br.org.generation.lojagames.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -48,7 +49,6 @@ public class Usuario {
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("usuario")
 	private List<Produto> produto;
-	
 	
 	public Long getId() {
 		return id;
