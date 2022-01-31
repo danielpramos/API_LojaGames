@@ -33,7 +33,7 @@ public class ProdutoController {
 	@Autowired
 	private CategoriaRepository categoriaRepository;
 	
-	@GetMapping
+	@GetMapping("/listar")
 	public ResponseEntity <List<Produto>> lista() {
 		return ResponseEntity.ok(produtoRepository.findAll());
 		
@@ -53,7 +53,12 @@ public class ProdutoController {
 				.orElse(ResponseEntity.notFound().build());	
 	}
 	
+	@GetMapping("/preco/{start}/e/{end}")
+	public ResponseEntity <List<Produto>> precoEntre(@PathVariable BigDecimal start,@PathVariable BigDecimal end){	
+		return ResponseEntity.ok(produtoRepository.findByPrecoBetween(start,end));
+		
 	
+	}
 	
 	@GetMapping("/preco_maior/{preco}")
 	public ResponseEntity <List<Produto>> precoMaior(@PathVariable BigDecimal preco){
@@ -89,7 +94,7 @@ public class ProdutoController {
 	}		
 				
 	@DeleteMapping("/{id}")
-	public ResponseEntity <?> DeletaProduto(@PathVariable Long id){
+	public ResponseEntity <?> deletaProduto(@PathVariable Long id){
 		return produtoRepository.findById(id)
 				.map(resposta -> {
 					produtoRepository.deleteById(id);
