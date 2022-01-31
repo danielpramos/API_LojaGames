@@ -27,9 +27,14 @@ public class UsuarioService {
 		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
 			return Optional.empty();
 			
-		if (calcularIdade(usuario.getDataNascimento()) < 18)
+		int idade = calcularIdade(usuario.getDataNascimento());
+		int anos = 18 - idade;
+		
+		if ( idade < 18)
 			throw new ResponseStatusException(
-					HttpStatus.BAD_REQUEST, "Usuário é menor que 18 anos!", null);
+					HttpStatus.BAD_REQUEST, "Usuário é menor que 18 anos! Sua idade é de " 
+			        + idade + " anos! aguarde " + anos + " anos e Tente Novamente!;)", null);
+		
 		
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
